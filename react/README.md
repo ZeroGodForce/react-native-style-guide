@@ -24,11 +24,111 @@ This style guide is mostly based on the standards that are currently prevalent i
 
 ## Basic Rules
 
-  - Only include one React component per file.
+  <!-- - Only include one React component per file.
     - However, multiple [Stateless, or Pure, Components](https://facebook.github.io/react/docs/reusable-components.html#stateless-functions) are allowed per file. eslint: [`react/no-multi-comp`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/no-multi-comp.md#ignorestateless).
   - Always use JSX syntax.
   - Do not use `React.createElement` unless you’re initializing the app from a file that is not JSX.
-  - [`react/forbid-prop-types`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/forbid-prop-types.md) will allow `arrays` and `objects` only if it is explicitly noted what `array` and `object` contains, using `arrayOf`, `objectOf`, or `shape`.
+  - [`react/forbid-prop-types`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/forbid-prop-types.md) will allow `arrays` and `objects` only if it is explicitly noted what `array` and `object` contains, using `arrayOf`, `objectOf`, or `shape`. -->
+
+- Only include one React component per file.
+
+  ```tsx
+  // bad
+  // Multiple components in one file
+  import React from 'react';
+  import { View, Text } from 'react-native';
+
+  const Header = () => (
+    <View>
+      <Text>Header</Text>
+    </View>
+  );
+
+  const Footer = () => (
+    <View>
+      <Text>Footer</Text>
+    </View>
+  );
+
+  // good
+  // Header.tsx
+  import React from 'react';
+  import { View, Text } from 'react-native';
+
+  export const Header = () => (
+    <View>
+      <Text>Header</Text>
+    </View>
+  );
+  ```
+
+- Always use JSX syntax.
+
+  ```tsx
+  // bad
+  // Using React.createElement
+  import React from 'react';
+  import { View, Text } from 'react-native';
+
+  const WelcomeMessage = () => React.createElement(View, null, React.createElement(Text, null, 'Welcome'));
+
+  // good
+  // WelcomeMessage.tsx
+  import React from 'react';
+  import { View, Text } from 'react-native';
+
+  export const WelcomeMessage = () => (
+    <View>
+      <Text>Welcome</Text>
+    </View>
+  );
+  ```
+
+- Do not use `React.createElement` unless initializing the app from a non-JSX file.
+  ```tsx
+  // bad
+  // Unnecessarily using React.createElement in a .tsx file
+  const App = () => React.createElement('View', null, 'Hello World');
+
+  // good
+  // Directly using JSX syntax
+  const App = () => <View>Hello World</View>;
+  ```
+
+- For prop types, use TypeScript's type annotations instead of `React.PropTypes`.
+  ```tsx
+  // bad
+  // Using PropTypes in a TypeScript environment
+  import PropTypes from 'prop-types';
+  import React from 'react';
+  import { Text, View } from 'react-native';
+
+  const Greeting = ({ name }) => (
+    <View>
+      <Text>Hello, {name}</Text>
+    </View>
+  );
+
+  Greeting.propTypes = {
+    name: PropTypes.string.isRequired,
+  };
+
+  // good
+  // Using TypeScript interfaces for component props
+  import React from 'react';
+  import { Text, View } from 'react-native';
+
+  interface GreetingProps {
+    name: string;
+  }
+
+  const Greeting: React.FC<GreetingProps> = ({ name }) => (
+    <View>
+      <Text>Hello, {name}</Text>
+    </View>
+  );
+  ```
+
 
 ## Class vs `React.createClass` vs stateless
 
