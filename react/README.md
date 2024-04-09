@@ -248,11 +248,12 @@ const Listing: React.FC<Props> = ({ hello }) => {
 };
 ```
 
-## Mixins
+## Mixins (Historical Context)
 
-  - [Do not use mixins](https://facebook.github.io/react/blog/2016/07/13/mixins-considered-harmful.html).
+**Do not use mixins** in React Native projects. 
 
-  > Why? Mixins introduce implicit dependencies, cause name clashes, and cause snowballing complexity. Most use cases for mixins can be accomplished in better ways via components, higher-order components, or utility modules.
+> Why? Mixins were an early pattern for reusing code between components, but they have been replaced by more explicit and modular solutions like hooks for functional components and higher-order components (HOCs). For more details, see React's legacy blog post ["Mixins Considered Harmful"](https://reactjs.org/blog/2016/07/13/mixins-considered-harmful.html).
+
 
 ## Naming
 
