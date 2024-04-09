@@ -129,7 +129,7 @@ This style guide is mostly based on the standards that are currently prevalent i
   );
   ```
 
-
+<!-- 
 ## Class vs `React.createClass` vs stateless
 
   - If you have internal state and/or refs, prefer `class extends React.Component` over `React.createClass`. eslint: [`react/prefer-es6-class`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/prefer-es6-class.md) [`react/prefer-stateless-function`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/prefer-stateless-function.md)
@@ -171,7 +171,82 @@ This style guide is mostly based on the standards that are currently prevalent i
     function Listing({ hello }) {
       return <div>{hello}</div>;
     }
-    ```
+    ``` -->
+## Class Components vs. Functional Components
+When deciding between using a class component or a functional component in React Native with TypeScript, consider the following:
+
+If you have internal state, effects, or refs, prefer functional components with hooks over class components.
+
+TypeScript provides excellent support for functional components, allowing for strong typing of props and state, and hooks offer a more concise and readable way to manage state, side effects, and more.
+
+```tsx
+// bad
+import React, { Component } from 'react';
+import { Text, View } from 'react-native';
+
+interface State {
+  hello: string;
+}
+
+interface Props {}
+
+class Listing extends Component<Props, State> {
+  state: State = {
+    hello: 'World',
+  };
+
+  render() {
+    return <View><Text>{this.state.hello}</Text></View>;
+  }
+}
+
+// good
+import React, { useState } from 'react';
+import { Text, View } from 'react-native';
+
+interface Props {
+  initialHello: string;
+}
+
+const Listing: React.FC<Props> = ({ initialHello }) => {
+  const [hello, setHello] = useState(initialHello);
+
+  return <View><Text>{hello}</Text></View>;
+};
+```
+
+For components without state or refs, use named function expressions.
+
+This approach benefits from both readability and the ability to leverage TypeScript for prop type validation without the overhead of a class.
+
+```tsx
+// bad
+import React, { Component } from 'react';
+import { Text, View } from 'react-native';
+
+class Listing extends Component<{ hello: string }> {
+  render() {
+    return <View><Text>{this.props.hello}</Text></View>;
+  }
+}
+
+// bad (relying on function name inference is discouraged)
+const Listing = ({ hello }: { hello: string }) => (
+  <View><Text>{hello}</Text></View>
+);
+
+// good
+import React from 'react';
+import { Text, View } from 'react-native';
+
+interface Props {
+  hello: string;
+}
+
+const Listing: React.FC<Props> = ({ hello }) => {
+  return <View><Text>{hello}</Text></View>;
+};
+```
 
 ## Mixins
 
