@@ -257,11 +257,11 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
 ## Naming
 
-  - **Extensions**: Use `.jsx` extension for React components. eslint: [`react/jsx-filename-extension`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md)
-  - **Filename**: Use PascalCase for filenames. E.g., `ReservationCard.jsx`.
-  - **Reference Naming**: Use PascalCase for React components and camelCase for their instances. eslint: [`react/jsx-pascal-case`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-pascal-case.md)
+  - **Extensions**: Use `.tsx` extension for React components that use JSX and .ts for files that do not contain JSX. This change is essential in a TypeScript project for proper syntax highlighting and tooling support.
+  - **Filename**: Use PascalCase for filenames of components. This convention applies to both `.tsx` and `.ts` files when they define or contain a React component or a significant class.
+  - **Reference Naming**: Use **PascalCase for React component imports** and **camelCase for their instances** within the code. This distinction helps clarify the difference between component classes and their instances, aligning with standard JavaScript object-oriented practices.
 
-    ```jsx
+    ```tsx
     // bad
     import reservationCard from './ReservationCard';
 
@@ -274,10 +274,11 @@ const Listing: React.FC<Props> = ({ hello }) => {
     // good
     const reservationItem = <ReservationCard />;
     ```
+    > Why? Using PascalCase for component names distinguishes them as constructors or classes, which are instantiable, whereas camelCase instances indicate that they are instances, adhering to typical JavaScript naming conventions.
 
-  - **Component Naming**: Use the filename as the component name. For example, `ReservationCard.jsx` should have a reference name of `ReservationCard`. However, for root components of a directory, use `index.jsx` as the filename and use the directory name as the component name:
+  - **Component Naming**: Use the filename as the component name. For example, `ReservationCard.tsx` should have a reference name of `ReservationCard`. 
 
-    ```jsx
+    ```tsx
     // bad
     import Footer from './Footer/Footer';
 
@@ -287,12 +288,24 @@ const Listing: React.FC<Props> = ({ hello }) => {
     // good
     import Footer from './Footer';
     ```
+    - For components defined in an `index.tsx` file within a directory, the component should still be given an explicit reference name, as you would for any other file, rather than defaulting to the directory name. This approach ensures consistency and clarity when importing and using these components elsewhere in the application.
+    
+      ```tsx
+      // In Footer/index.tsx
+      // Explicit component naming inside index.tsx
+      export const Footer: React.FC = () => {
+        return <View><Text>Footer Content</Text></View>;
+      };
+
+      // When importing
+      import { Footer } from './Footer';  // Imports Footer from Footer/index.tsx
+      ```
 
   - **Higher-order Component Naming**: Use a composite of the higher-order component’s name and the passed-in component’s name as the `displayName` on the generated component. For example, the higher-order component `withFoo()`, when passed a component `Bar` should produce a component with a `displayName` of `withFoo(Bar)`.
 
     > Why? A component’s `displayName` may be used by developer tools or in error messages, and having a value that clearly expresses this relationship helps people understand what is happening.
 
-    ```jsx
+    ```tsx
     // bad
     export default function withFoo(WrappedComponent) {
       return function WithFoo(props) {
@@ -315,20 +328,18 @@ const Listing: React.FC<Props> = ({ hello }) => {
     }
     ```
 
-  - **Props Naming**: Avoid using DOM component prop names for different purposes.
+  - **Props Naming**
+    - **Respect the standard usage of React Native prop names**: Avoid repurposing well-established prop names in React Native for different meanings. For instance, use the `style` prop as intended for passing styling properties to elements.
 
-    > Why? People expect props like `style` and `className` to mean one specific thing. Varying this API for a subset of your app makes the code less readable and less maintainable, and may cause bugs.
+      ```tsx
+      // bad
+      <MyComponent style="coral" />  // Misleading use of 'style' as a string.
 
-    ```jsx
-    // bad
-    <MyComponent style="fancy" />
-
-    // bad
-    <MyComponent className="fancy" />
-
-    // good
-    <MyComponent variant="fancy" />
-    ```
+      // good
+      <MyComponent style={{ backgroundColor: 'coral' }} />  // Correct use of 'style' with an object.
+      <MyComponent variant="coral" />  // Alternative prop for variant styles.
+      ```
+    - **Use semantically clear prop names**: It's generally acceptable to use props like `id`, `name`, `options`, etc., but ensure the name is clear and consistent with the context of the element and the data contained within the prop. Prop names should intuitively convey their function without ambiguity.
 
 ## Declaration
 
