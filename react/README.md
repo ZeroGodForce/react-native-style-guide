@@ -343,19 +343,60 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
 ## Declaration
 
-  - Do not use `displayName` for naming components. Instead, name the component by reference.
+  - Do not use `displayName` for naming components.
+    > Why? Explicitly naming your components by their reference, rather than relying on the `displayName` property, promotes clearer, more maintainable code. This practice is particularly important in TypeScript projects where type inference and editor integrations rely heavily on explicit names.
 
-    ```jsx
+    ```tsx
     // bad
-    export default React.createClass({
+    const ReservationCard = React.createClass({
       displayName: 'ReservationCard',
       // stuff goes here
     });
 
-    // good
+    // good (explicitly naming the component)
     export default class ReservationCard extends React.Component {
+      // stuff goes here
     }
+
+    // better (modern approach with functional components)
+    export const ReservationCard: React.FC = () => {
+      // stuff goes here
+    };
     ```
+
+  - Use Functional Components Over Class Components.
+    > Given the shift towards functional components in the React ecosystem, especially with the widespread adoption of hooks, it's beneficial to prefer functional components over class components unless specific class features are needed (e.g., error boundaries).
+    ```tsx
+    // good (class component)
+    export default class ReservationCard extends React.Component {
+      // component logic
+    }
+
+    // better (functional component)
+    export const ReservationCard: React.FC = () => {
+      // component logic
+    };
+    ```
+  - Functional Component Declaration
+    - Preferred Method: Arrow Functions Assigned to Constants
+      > Why? Using arrow functions helps maintain a consistent style across your codebase, and is the most common way in which code examples are defined in both React Native and Expo documentation.
+
+      ```tsx
+      // Recommended
+      export const ReservationCard: React.FC = () => {
+        return <View><Text>Reservation Details</Text></View>;
+      };
+      ```
+      > Less Error-Prone: By capturing the `this` of the enclosing context, arrow functions reduce common errors associated with JavaScript’s dynamic `this`. Generally suitable for most React Native components unless hoisting is specifically required.
+
+    - Alternative Method: Named Function Declarations
+      ```tsx
+      // Alternative when hoisting is needed
+      function ReservationCard() {
+        return <View><Text>Reservation Details</Text></View>;
+      }
+      ```
+      > Why? Named function declarations are beneficial when component definitions need to be referenced before their declaration point due to their hoisting nature.
 
 ## Alignment
 
