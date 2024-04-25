@@ -730,7 +730,7 @@ Alternative Method: Callback Refs
 
   - Always self-close tags that have no children. eslint: [`react/self-closing-comp`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/self-closing-comp.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo variant="stuff"></Foo>
 
@@ -740,7 +740,7 @@ Alternative Method: Callback Refs
 
   - If your component has multiline properties, close its tag on a new line. eslint: [`react/jsx-closing-bracket-location`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-closing-bracket-location.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo
       bar="bar"
