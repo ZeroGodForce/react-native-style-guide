@@ -589,126 +589,113 @@ const Listing: React.FC<Props> = ({ hello }) => {
     <TouchableOpacity accessibilityRole="button" />
     ```
 
-  - Avoid using an array index as `key` prop, prefer a stable ID. eslint: [`react/no-array-index-key`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/no-array-index-key.md)
+  - Avoid using an array index as a `key` prop; prefer a stable ID. 
+    > Why? Not using a stable ID [is an anti-pattern](https://medium.com/@robinpokorny/index-as-a-key-is-an-anti-pattern-e0349aece318) because it can negatively impact performance and cause issues with component state.
 
-> Why? Not using a stable ID [is an anti-pattern](https://medium.com/@robinpokorny/index-as-a-key-is-an-anti-pattern-e0349aece318) because it can negatively impact performance and cause issues with component state.
+    We don’t recommend using indexes for keys if the order of items may change.
 
-We don’t recommend using indexes for keys if the order of items may change.
-
-  ```jsx
-  // bad
-  {todos.map((todo, index) =>
-    <Todo
-      {...todo}
-      key={index}
-    />
-  )}
-
-  // good
-  {todos.map(todo => (
-    <Todo
-      {...todo}
-      key={todo.id}
-    />
-  ))}
-  ```
-
-  - Always define explicit defaultProps for all non-required props.
-
-  > Why? propTypes are a form of documentation, and providing defaultProps means the reader of your code doesn’t have to assume as much. In addition, it can mean that your code can omit certain type checks.
-
-  ```jsx
-  // bad
-  function SFC({ foo, bar, children }) {
-    return <div>{foo}{bar}{children}</div>;
-  }
-  SFC.propTypes = {
-    foo: PropTypes.number.isRequired,
-    bar: PropTypes.string,
-    children: PropTypes.node,
-  };
-
-  // good
-  function SFC({ foo, bar, children }) {
-    return <div>{foo}{bar}{children}</div>;
-  }
-  SFC.propTypes = {
-    foo: PropTypes.number.isRequired,
-    bar: PropTypes.string,
-    children: PropTypes.node,
-  };
-  SFC.defaultProps = {
-    bar: '',
-    children: null,
-  };
-  ```
-
-  - Use spread props sparingly.
-  > Why? Otherwise you’re more likely to pass unnecessary props down to components. And for React v15.6.1 and older, you could [pass invalid HTML attributes to the DOM](https://reactjs.org/blog/2017/09/08/dom-attributes-in-react-16.html).
-
-  Exceptions:
-
-  - HOCs that proxy down props and hoist propTypes
-
-  ```jsx
-  function HOC(WrappedComponent) {
-    return class Proxy extends React.Component {
-      Proxy.propTypes = {
-        text: PropTypes.string,
-        isLoading: PropTypes.bool
-      };
-
-      render() {
-        return <WrappedComponent {...this.props} />
-      }
-    }
-  }
-  ```
-
-  - Spreading objects with known, explicit props. This can be particularly useful when testing React components with Mocha’s beforeEach construct.
-
-  ```jsx
-  export default function Foo {
-    const props = {
-      text: '',
-      isPublished: false
-    }
-
-    return (<div {...props} />);
-  }
-  ```
-
-  Notes for use:
-  Filter out unnecessary props when possible. Also, use [prop-types-exact](https://www.npmjs.com/package/prop-types-exact) to help prevent bugs.
-
-  ```jsx
-  // bad
-  render() {
-    const { irrelevantProp, ...relevantProps } = this.props;
-    return <WrappedComponent {...this.props} />
-  }
-
-  // good
-  render() {
-    const { irrelevantProp, ...relevantProps } = this.props;
-    return <WrappedComponent {...relevantProps} />
-  }
-  ```
-
-## Refs
-
-  - Always use ref callbacks. eslint: [`react/no-string-refs`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/no-string-refs.md)
-
-    ```jsx
+    ```tsx
     // bad
-    <Foo
-      ref="myRef"
-    />
+    {todos.map((todo, index) =>
+      <Todo
+        {...todo}
+        key={index}
+      />
+    )}
 
     // good
-    <Foo
-      ref={(ref) => { this.myRef = ref; }}
-    />
+    {todos.map(todo => (
+      <Todo
+        {...todo}
+        key={todo.id}
+      />
+    ))}
+    ```
+    - Exception: If you are rendering a static list where the order does not change and there are no dynamic updates, using an index as a key may be acceptable. This is particularly true for simple lists of static content where no state or props of the list items will change in response to user interactions.
+
+      ```tsx
+      // Acceptable when the list is static and does not change
+      {staticItems.map((item, index) => (
+        <StaticItemComponent {item} key={index} />
+      ))}
+      ```
+
+
+  - Prefer TypeScript type definitions over propTypes
+
+    > Why? TypeScript provides compile-time type checking which enhances code reliability and developer productivity by catching errors early. Unlike propTypes, TypeScript types are integrated into the language, offering a more robust and versatile way to define component interfaces.
+
+    ```tsx
+    // bad (using propTypes)
+    function SFC({ foo, bar }) {
+      return <div>{foo}{bar}</div>;
+    }
+    SFC.propTypes = {
+      foo: PropTypes.number.isRequired,
+      bar: PropTypes.string,
+    };
+
+    // good (using TypeScript)
+    interface SFCProps {
+      foo: number; // Required
+      bar?: string;
+    }
+
+    const SFC: React.FC<SFCProps> = ({ foo, bar = '' }) => {
+      return <div>{foo}{bar}</div>;
+    };
+    ```
+
+  - Always assign default values to optional props directly in the component signature
+    > Why? This practice ensures that all components have predictable behaviour and reduces the need for additional type checks within the component body. It also helps document the component’s expected behaviour without external references.
+
+    ```tsx
+    interface SFCProps {
+      foo: number;
+      bar?: string; // Optional with default
+    }
+    
+    // Empty string set as default value for `bar`
+    const SFC: React.FC<SFCProps> = ({
+      foo,
+      bar = '', 
+    }) => {
+      return <div>{foo}{bar}</div>;
+    };
+    ```
+
+## Refs
+Preferred Method: `useRef` Hook
+  - Use `useRef` for functional components. This is the modern and recommended approach for managing refs in React. `useRef` provides a more consistent and safer way to access React elements.
+
+    > Why? `useRef` returns a mutable ref object whose .current property is initialized with the passed argument (default is null). This object persists for the full lifetime of the component, making it ideal for tracking a a component without re-rendering issues.
+
+    ```tsx
+    import React, { useRef } from 'react';
+
+    function FooComponent() {
+      const myRef = useRef(null);
+
+      return <Foo ref={myRef} />;
+    }
+    ```
+
+Alternative Method: Callback Refs
+  - Use callback refs when more control is needed over the ref's lifecycle or in class components. Callback refs provide the flexibility to set and clean up refs directly in component lifecycle methods.
+
+    > Why? Callback refs give you direct access to the DOM element or React node, allowing for more complex interactions such as integrating with third-party DOM libraries. They are particularly useful in class components or situations where the ref needs to be attached or detached at specific times.
+    ```tsx
+    class FooComponent extends React.Component {
+      myRef = null;
+
+      componentDidMount() {
+        // You can now access this.myRef here if needed
+      }
+
+      render() {
+        return <Foo ref={(ref) => { this.myRef = ref; }} />;
+      }
+    }
     ```
 
 ## Parentheses
