@@ -702,28 +702,28 @@ Alternative Method: Callback Refs
 
   - Wrap JSX tags in parentheses when they span more than one line. eslint: [`react/jsx-wrap-multilines`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-wrap-multilines.md)
 
-    ```jsx
-    // bad
-    render() {
-      return <MyComponent variant="long body" foo="bar">
-               <MyChild />
-             </MyComponent>;
-    }
+    ```tsx
+  // bad
+  const MyComponent = () => {
+    return <MyContainer variant="long body" foo="bar">
+            <MyChild />
+          </MyContainer>;
+  }
 
-    // good
-    render() {
-      return (
-        <MyComponent variant="long body" foo="bar">
-          <MyChild />
-        </MyComponent>
-      );
-    }
+  // good
+  const MyComponent = () => {
+    return (
+      <MyContainer variant="long body" foo="bar">
+        <MyChild />
+      </MyContainer>
+    );
+  }
 
-    // good, when single line
-    render() {
-      const body = <div>hello</div>;
-      return <MyComponent>{body}</MyComponent>;
-    }
+  // good, when single line
+  const MyComponent = () => {
+    const body = <div>hello</div>;
+    return <MyContainer>{body}</MyContainer>;
+  }
     ```
 
 ## Tags
