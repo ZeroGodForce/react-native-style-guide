@@ -402,7 +402,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
   - Follow these alignment styles for JSX syntax. eslint: [`react/jsx-closing-bracket-location`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-closing-bracket-location.md) [`react/jsx-closing-tag-location`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-closing-tag-location.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo superLongParam="bar"
          anotherSuperLongParam="baz" />
@@ -471,7 +471,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
     > Why? Regular HTML attributes also typically use double quotes instead of single, so JSX attributes mirror this convention.
 
-    ```jsx
+    ```tsx
     // bad
     <Foo bar='bar' />
 
@@ -489,7 +489,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
   - Always include a single space in your self-closing tag. eslint: [`no-multi-spaces`](https://eslint.org/docs/rules/no-multi-spaces), [`react/jsx-tag-spacing`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-tag-spacing.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo/>
 
@@ -506,7 +506,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
   - Do not pad JSX curly braces with spaces. eslint: [`react/jsx-curly-spacing`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-curly-spacing.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo bar={ baz } />
 
@@ -518,7 +518,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
   - Always use camelCase for prop names, or PascalCase if the prop value is a React component.
 
-    ```jsx
+    ```tsx
     // bad
     <Foo
       UserName="hello"
@@ -535,7 +535,7 @@ const Listing: React.FC<Props> = ({ hello }) => {
 
   - Omit the value of the prop when it is explicitly `true`. eslint: [`react/jsx-boolean-value`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-boolean-value.md)
 
-    ```jsx
+    ```tsx
     // bad
     <Foo
       hidden={true}
@@ -550,45 +550,43 @@ const Listing: React.FC<Props> = ({ hello }) => {
     <Foo hidden />
     ```
 
-  - Always include an `alt` prop on `<img>` tags. If the image is presentational, `alt` can be an empty string or the `<img>` must have `role="presentation"`. eslint: [`jsx-a11y/alt-text`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/alt-text.md)
+  - Always include an `accessibilityLabel` prop on `<Image>` components if the image conveys meaningful information. If the image is purely decorative, you can set `accessible={false}` to indicate that the image should be ignored by screen readers. This aligns with accessibility standards in React Native, helping all users get the most out of your app.
 
-    ```jsx
+    ```tsx
     // bad
-    <img src="hello.jpg" />
+    <Image source={require('hello.jpg')} />
 
-    // good
-    <img src="hello.jpg" alt="Me waving hello" />
+    // good (image conveys meaningful information)
+    <Image source={require('hello.jpg')} accessibilityLabel="Me waving hello" />
 
-    // good
-    <img src="hello.jpg" alt="" />
+    // good (decorative image)
+    <Image source={require('hello.jpg')} accessible={false} />
 
-    // good
-    <img src="hello.jpg" role="presentation" />
     ```
 
-  - Do not use words like "image", "photo", or "picture" in `<img>` `alt` props. eslint: [`jsx-a11y/img-redundant-alt`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/img-redundant-alt.md)
+  - Do not use phrases like "image", "photo", or "picture" in `accessibilityLabel` props for `<Image>` components. This follows the same rationale: such descriptors are typically redundant because the context in which the `<Image>` is used should make it clear it is graphical content, or the content itself should be described effectively without stating it is an image.
 
-    > Why? Screenreaders already announce `img` elements as images, so there is no need to include this information in the alt text.
+    > Why? While screen readers may not automatically describe elements like they might on the web. When a visually impaired person uses a screen reader and navigates to an image, the `accessibilityLabel` serves as the descriptive text for that image. Using terms like "image" or "photo" within this label is usually unnecessary.
 
-    ```jsx
+    ```tsx
     // bad
-    <img src="hello.jpg" alt="Picture of me waving hello" />
+    <Image source={require('hello.jpg')} accessibilityLabel="Picture of me waving hello" />
 
     // good
-    <img src="hello.jpg" alt="Me waving hello" />
+    <Image source={require('hello.jpg')} accessibilityLabel="Me waving hello" />
     ```
 
-  - Use only valid, non-abstract [ARIA roles](https://www.w3.org/TR/wai-aria/#usage_intro). eslint: [`jsx-a11y/aria-role`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/aria-role.md)
+  - Use only appropriate `accessibilityRole` values: Ensure that you use only the roles supported by React Native, which describe the element's function in a way that makes sense when no visual cues are available.
 
-    ```jsx
-    // bad - not an ARIA role
-    <div role="datepicker" />
+    ```tsx
+    // bad - not a supported role in React Native
+    <View accessibilityRole="datepicker" />
 
-    // bad - abstract ARIA role
-    <div role="range" />
+    // bad - using a vague role
+    <View accessibilityRole="range" />
 
     // good
-    <div role="button" />
+    <TouchableOpacity accessibilityRole="button" />
     ```
 
   - Do not use `accessKey` on elements. eslint: [`jsx-a11y/no-access-key`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-access-key.md)
